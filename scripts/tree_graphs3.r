@@ -2,6 +2,7 @@ library(rpart)
 library(rattle)
 library(plot3D)
 library(plotly)
+library(rpart)
 library(tidyverse)
 
 #dtrain <- as.data.frame(mvrnorm(n = 100, c(9,9),matrix(c(3,0,0,3),2,2)))
@@ -20,13 +21,13 @@ dtrain %>% ggplot(aes(x = x, y = y)) +
 
 #Visualización del dataset sintético
 plot_ly(dtrain, x = ~x, y = ~y, z = ~z) %>%
-  add_markers(size = 1,color = I("red"))
+  add_markers(size = 1,color = I("orange"))
 
 tree <- rpart(z ~ x + y, data = dtrain, method = "anova",maxdepth = 10, minsplit = 1, minbucket = 1, cp = 0)
 
 fitted.values <- predict(tree, newdata = dtrain)
 
-#fancyRpartPlot(tree)
+#fancyRpartPlot(tree, digits = 3)
 
 grid.lines = 50   #number of lines on grid
 #predict x, y and z variables’ values
@@ -38,7 +39,7 @@ z.pred <- matrix(predict(tree, newdata = xy),
 
 plot_ly(dtrain, x = ~x, y = ~y, z = ~z) %>%
   add_surface(x=x.pred, y=y.pred, z=z.pred,type = 'mesh3d', name = 'pred_surface',
-              colorscale = "Greys",opacity = 1) %>%
+              colorscale = "Greys",opacity = 0.9) %>%
   add_markers(size = 1) %>% #,color = ~fitted.values
   #list(c(0, 1), c("white", "black"))
   layout(title = 'Datos observados vs. superficie de predicción', plot_bgcolor = "grey")

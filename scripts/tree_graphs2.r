@@ -4,7 +4,7 @@ library(plot3D)
 library(plotly)
 library(tidyverse)
 
-#setwd("C://Users//Federico Checozzi//Documents//R//EEA//Trabajo Práctico 2")
+setwd("C://Users//Federico Checozzi//Documents//R//EEA//Trabajo Práctico 2")
 
 dtrain <- read.csv("./datasets/encuesta_salud_train.csv", encoding="UTF-8",stringsAsFactors = TRUE, row.names ="record") 
 
