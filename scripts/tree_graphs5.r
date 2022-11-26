@@ -49,7 +49,15 @@ for(path in path.list){
   rect_info <- rbind(rect_info,data.frame(xmin = min.x, xmax = max.x, ymin = min.y, ymax = max.y))
 }
 
+dtrain <- dtrain %>% 
+  mutate(fitted.values = as.factor(round(fitted.values,2)))
+
+label_points <- dtrain %>%
+  group_by(fitted.values) %>%
+  summarise(x = median(x), y = median (y))
+
 ggplot() +
   geom_rect(data = rect_info,aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),colour = "grey50", fill = "white") +
-  geom_point(data = dtrain,aes(x = x, y = y, color = as.factor(fitted.values))) +
+  geom_point(data = dtrain,aes(x = x, y = y, color = fitted.values)) +
+  geom_label(data = label_points,aes(x = x, y = y, label = fitted.values)) +
   labs(color="Valor ajustado")

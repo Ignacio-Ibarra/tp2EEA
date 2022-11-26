@@ -8,7 +8,7 @@ require(rpart.plot)
 require(gridExtra)
 require(parttree)
 
-df <- fread("./datasets/encuesta_salud_train.csv")
+df <- fread("../datasets/encuesta_salud_train.csv")
 
 # obtengo una muestra
 N = 100
@@ -40,9 +40,12 @@ y2 <- c(52,64,64,53,53,68,68,63,63,75,75)
 
 partitions <- data.frame(x1, x2, y1, y2)
 
-g2 <- ggplot(samp.df, aes(altura, peso))+
-  geom_point()+
-  geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2), data = partitions)
+peso_pred <- predict(arbol,samp.df)
+
+g2 <- ggplot(samp.df, aes(x = altura))+
+  geom_point(aes(y = peso))+
+  geom_step(y = peso_pred)
+  #geom_segment(aes(x = x1, y = y1, xend = x2, yend = y2), data = partitions)
   
 
 
