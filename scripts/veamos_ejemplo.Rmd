@@ -59,10 +59,18 @@ ggplot(dtrain, aes(x, y))+
 
 ```{r}
 
-tree <- rpart(z ~ y + z, data = dtrain, method = "anova",maxdepth = 3, minsplit = 1, minbucket = 1, cp = 0)
-fancyRpartPlot(tree)
+tree <- rpart(z ~ y + x, data = dtrain, method = "anova",maxdepth = 3, minsplit = 1, minbucket = 1, cp = 0)
+fancyRpartPlot(tree, digits=3)
+
+rpart.plot::prp(tree, digits=2)
+
+prp(tree)
 ```
 
+
+El árbol minimiza esta función. 
+
+$ SSE_{s^*}(t) = \min_{s} SSE(t_L) + SSE(t_D) = \min_{s} \sum_{i=1}^{N}{\xi_{i}}$
 
 
 
@@ -88,7 +96,7 @@ for(path in path.list){
     var <- s[1]
     cutoff <- as.numeric(s[2])
     is.less <- str_detect(split,"< ")
-    if(var == "x1"){
+    if(var == "x"){
       if(is.less == TRUE){
         max.x <- cutoff
       } else {
