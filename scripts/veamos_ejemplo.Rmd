@@ -23,7 +23,7 @@ library(plotly)
 #Vamos a crear un dataset sintético y graficarlo en 3D
 set.seed(911)
 
-n = 1000
+n = 100
 
 dtrain <- data.frame(x1 = runif(n,4.5,13.5),x2 = runif(n,4.5,13.5))
 noise <- rnorm(n, mean=0, sd=0.5)
@@ -33,10 +33,14 @@ dtrain <- dtrain %>% mutate(y = sqrt((x1-9)**2+(x2-9)**2)+noise)
 #Visualización del dataset sintético
 plot_ly(dtrain, x = ~x1, y = ~x2, z = ~y) %>%
   add_markers(size = 1,color = I("orange"))
+
 ```
+
+
+
+
+
 ```{r}
-
-
 
 plot_ly(dtrain, x = ~x1, y = ~x2) %>%
   add_markers(size = 1,color = I("orange"))
@@ -106,7 +110,7 @@ for(path in path.list){
 #   geom_label(rect_info, aes(x=xmed, y=ymed, label=val))+
 #   theme_light()
 dtrain <- dtrain %>% 
-  mutate(fitted.values = as.factor(round(fitted.values,2)))
+  mutate(fitted.values = round(fitted.values,1))
 
 label_points <- dtrain %>%
   group_by(fitted.values) %>%
@@ -115,9 +119,10 @@ label_points <- dtrain %>%
 ggplot() +
   geom_rect(data = rect_info,aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),colour = "grey50", fill = "white") +
   geom_point(data = dtrain,aes(x = x1, y = x2, color = fitted.values)) +
-  geom_label(data = label_points,aes(x = x, y = y, label = fitted.values)) +
+  geom_label(data = label_points,aes(x = x, y = y, label = fitted.values, color=fitted.values)) +
   labs(color="Valor ajustado") +
   theme_light()
+
 ```
 
 
