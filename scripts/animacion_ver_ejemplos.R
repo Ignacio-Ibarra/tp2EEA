@@ -28,14 +28,15 @@ server <- function(input, output, session) {
       type = "scatter3d",
       mode = "markers",
       data = dtrain,
+      color = "orange",
       x = ~ x,
       y = ~ y,
-      z = ~ z
-    ) %>%
+      z = ~ z) %>%
+      #add_markers(size = 1,color = I("orange")) %>% 
       layout(scene = list(camera = list(
         eye = list(
-          x = 1.25,
-          y = 1.25,
+          x = 1.05,
+          y = 1.05,
           z = 1.25
         ),
         center = list(x = 0,

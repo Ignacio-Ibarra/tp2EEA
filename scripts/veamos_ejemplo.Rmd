@@ -18,6 +18,12 @@ library(plotly)
 
 ```
 
+Data generating Process
+
+
+$$ Z = f(x,y) + \epsilon = \sqrt{(x-9)^2 + (y-9)^2} + \epsilon \text{ con } \epsilon \sim \mathcal{N}(0,0.5) $$
+
+
 
 ```{r}
 #Vamos a crear un dataset sintético y graficarlo en 3D
@@ -25,14 +31,14 @@ set.seed(911)
 
 n = 100
 
-dtrain <- data.frame(x1 = runif(n,4.5,13.5),x2 = runif(n,4.5,13.5))
+dtrain <- data.frame(x = runif(n,4.5,13.5),y = runif(n,4.5,13.5))
 noise <- rnorm(n, mean=0, sd=0.5)
-dtrain <- dtrain %>% mutate(y = sqrt((x1-9)**2+(x2-9)**2)+noise)
+dtrain <- dtrain %>% mutate(z = sqrt((x-9)**2+(y-9)**2)+noise)
 
 
 #Visualización del dataset sintético
-plot_ly(dtrain, x = ~x1, y = ~x2, z = ~y) %>%
-  add_markers(size = 1,color = I("orange"))
+plot_ly(dtrain, x = ~x, y = ~y, z = ~z) %>%
+  add_markers(size = 1,color = I("lightblue"))
 
 ```
 
@@ -42,9 +48,9 @@ plot_ly(dtrain, x = ~x1, y = ~x2, z = ~y) %>%
 
 ```{r}
 
-plot_ly(dtrain, x = ~x1, y = ~x2) %>%
-  add_markers(size = 1,color = I("orange"))
-
+ggplot(dtrain, aes(x, y))+
+  geom_point(color="orange")+
+  theme_light()
 
 ```
 
@@ -53,7 +59,7 @@ plot_ly(dtrain, x = ~x1, y = ~x2) %>%
 
 ```{r}
 
-tree <- rpart(y ~ x1 + x2, data = dtrain, method = "anova",maxdepth = 3, minsplit = 1, minbucket = 1, cp = 0)
+tree <- rpart(z ~ y + z, data = dtrain, method = "anova",maxdepth = 3, minsplit = 1, minbucket = 1, cp = 0)
 fancyRpartPlot(tree)
 ```
 
@@ -73,10 +79,10 @@ path.list <- path.rpart(tree, nodes = nodevec) #genera una lista en la cual cada
 rect_info <- NULL
 for(path in path.list){
   path <- setdiff(path,"root")
-  min.x1 = min(dtrain$x1)
-  max.x1 = max(dtrain$x1)
-  min.x2 = min(dtrain$x2)
-  max.x2 = max(dtrain$x2)
+  min.x = min(dtrain$x)
+  max.x = max(dtrain$x)
+  min.y = min(dtrain$y)
+  max.y = max(dtrain$y)
   for(split in path){
     s <- unlist(str_split(split,"< |>="))
     var <- s[1]
@@ -84,41 +90,32 @@ for(path in path.list){
     is.less <- str_detect(split,"< ")
     if(var == "x1"){
       if(is.less == TRUE){
-        max.x1 <- cutoff
+        max.x <- cutoff
       } else {
-        min.x1 <- cutoff
+        min.x <- cutoff
       }
     } else {
       if(is.less == TRUE){
-        max.x2 <- cutoff 
+        max.y <- cutoff 
       } else {
-        min.x2 <- cutoff
+        min.y <- cutoff
       }
     }
   }
-  rect_info <- rbind(rect_info,data.frame(xmin = min.x1, xmax = max.x1, ymin = min.x2, ymax = max.x2))
+  rect_info <- rbind(rect_info,data.frame(xmin = min.x, xmax = max.x, ymin = min.y, ymax = max.y))
 }
 
-# rect_info <- rect_info %>% mutate(xmed = xmin+((xmax - xmin)/2),
-#                                   ymed = ymin + ((ymax - ymin)/2),
-#                                   val = levels(as.factor(round(fitted.values,2))))
-# 
-# ggplot() +
-#   geom_rect(data = rect_info,aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),colour = "grey50", fill = "white") +
-#   geom_point(data = dtrain,aes(x = x1, y = x2, color = round(fitted.values, 2))) +
-#   labs(color="Valor ajustado")+
-#   geom_label(rect_info, aes(x=xmed, y=ymed, label=val))+
-#   theme_light()
+
 dtrain <- dtrain %>% 
   mutate(fitted.values = round(fitted.values,1))
 
 label_points <- dtrain %>%
   group_by(fitted.values) %>%
-  summarise(x = median(x1), y = median (x2))
+  summarise(x = median(x), y = median (y))
 
 ggplot() +
   geom_rect(data = rect_info,aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),colour = "grey50", fill = "white") +
-  geom_point(data = dtrain,aes(x = x1, y = x2, color = fitted.values)) +
+  geom_point(data = dtrain,aes(x = x, y = y, color = fitted.values)) +
   geom_label(data = label_points,aes(x = x, y = y, label = fitted.values, color=fitted.values)) +
   labs(color="Valor ajustado") +
   theme_light()
