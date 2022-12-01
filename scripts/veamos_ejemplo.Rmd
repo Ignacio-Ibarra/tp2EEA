@@ -15,6 +15,7 @@ library(rpart)
 library(rattle)
 library(tidyverse)
 library(plotly)
+require(data.table)
 
 ```
 
@@ -62,9 +63,7 @@ ggplot(dtrain, aes(x, y))+
 tree <- rpart(z ~ y + x, data = dtrain, method = "anova",maxdepth = 3, minsplit = 1, minbucket = 1, cp = 0)
 fancyRpartPlot(tree, digits=3)
 
-rpart.plot::prp(tree, digits=2)
 
-prp(tree)
 ```
 
 
@@ -72,6 +71,51 @@ El árbol minimiza esta función.
 
 $ SSE_{s^*}(t) = \min_{s} SSE(t_L) + SSE(t_D) = \min_{s} \sum_{i=1}^{N}{\xi_{i}}$
 
+```{r}
+
+#Armo una función que realice particiones y evalue SSE a izquierda y derecha
+calculate_SSE <- function(izq, der){
+  sse_izq <- sum((izq - mean(izq))^2)
+  sse_der <- sum((der - mean(der))^2)
+  return(sse_izq + sse_der)
+}
+
+split_data <- function(node_data, feature, value){
+  node_data <- data.table(node_data)
+  izq_df <- node_data[get(feature)<  value,]
+  der_df <- node_data[get(feature)>= value,]
+  return(list(izq=izq_df, der=der_df))
+}
+
+evaluate_split <- function(node_data, feature, value, response){
+  izq <- split_data(node_data, feature, value)$izq[, get(response)]
+  der <- split_data(node_data, feature, value)$der[, get(response)]
+  sse <- calculate_SSE(izq, der)
+  return(sse)
+}
+
+
+y.vals <- unique(dtrain$y)
+y.sses <- unlist(lapply(y.vals, function(val) evaluate_split(dtrain, "y", val, "z")))
+
+x.vals <- unique(dtrain$x)
+x.sses <- unlist(lapply(x.vals, function(val) evaluate_split(dtrain, "x", val, "z")))
+
+vals <- c(y.vals, x.vals)
+sses <- c(y.sses, x.sses)
+variable <- c(rep("y", 100),rep("x",100))
+
+ver <- data.frame(vals, sses, variable)
+
+
+ggplot(ver, aes(x=vals, y=sses, color=variable))+
+  geom_line()+
+  guides(fill=guide_legend(title="Variable Explicativa"))+
+  labs(title = "SSE_L + SSE_D para cada \nposible split en la primera partición",x="Valores de la variable", y=expression("SSE_L + SSE_D"))+
+  theme_light()
+
+
+```
 
 
 
