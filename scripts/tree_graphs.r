@@ -21,6 +21,8 @@ frame <- tree$frame
 nodevec <- as.numeric(row.names(frame[frame$var == "<leaf>",])) #esto genera un vector con los números de nodos terminales
 path.list <- path.rpart(tree, nodes = nodevec) #genera una lista en la cual cada elemento indica el camino a un nodo
 
+#esta parte recorre la lista de caminos a un nodo, y a partir del rectángulo que cubre todo el espacio de variables predictoras
+#va quedándose con un rectángulo más pequeño a medida que se va por cada split
 rect_info <- NULL
 for(path in path.list){
   path <- setdiff(path,"root")
@@ -29,6 +31,7 @@ for(path in path.list){
   min.a = min(dtrain$edad)
   max.a = max(dtrain$edad)
   for(split in path){
+    #lee la variable, el punto de corte y la dirección tomada en el split
     s <- unlist(str_split(split,"< |>="))
     var <- s[1]
     cutoff <- as.numeric(s[2])
@@ -50,6 +53,7 @@ for(path in path.list){
   rect_info <- rbind(rect_info,data.frame(xmin = min.h, xmax = max.h, ymin = min.a, ymax = max.a))
 }
 
+#dibuja los rectángulos y cada una de las observaciones coloreadas según su valor de ajuste
 ggplot() +
   geom_rect(data = rect_info,aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax),colour = "grey50", fill = "white") +
   geom_point(data = dtrain,aes(x = altura, y = edad, color = as.factor(fitted.values)))

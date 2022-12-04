@@ -2,6 +2,8 @@ library(rpart)
 library(rattle)
 library(tidyverse)
 
+#similar a tree_graphs.r, pero con el dataset sintético e imprimiendo etiquetas para cada región rectangular
+
 set.seed(911)
 
 n = 1000
@@ -17,8 +19,8 @@ fancyRpartPlot(tree)
 fitted.values <- predict(tree, newdata = dtrain)
 
 frame <- tree$frame
-nodevec <- as.numeric(row.names(frame[frame$var == "<leaf>",])) #esto genera un vector con los números de nodos terminales
-path.list <- path.rpart(tree, nodes = nodevec) #genera una lista en la cual cada elemento indica el camino a un nodo
+nodevec <- as.numeric(row.names(frame[frame$var == "<leaf>",])) 
+path.list <- path.rpart(tree, nodes = nodevec) 
 
 rect_info <- NULL
 for(path in path.list){
@@ -52,6 +54,7 @@ for(path in path.list){
 dtrain <- dtrain %>% 
   mutate(fitted.values = as.factor(round(fitted.values,2)))
 
+#los puntos para geom_label son las coordenadas medianas de cada rectángulo
 label_points <- dtrain %>%
   group_by(fitted.values) %>%
   summarise(x = median(x), y = median (y))

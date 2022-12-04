@@ -19,17 +19,17 @@ fancyRpartPlot(tree)
 x <- dtrain$altura
 y <- dtrain$edad
 z <- dtrain$peso
-# predict values on a X-Y grid
-grid.lines = 50   #number of lines on grid
-#predict x, y and z variables’ values
+# predice valores en una grilla X-Y
+grid.lines = 50   #número de líneas en la grilla
+#predicciones en los valores de x, y, z
 x.pred <- seq(min(x), max(x), length.out = grid.lines)
 y.pred <- seq(min(y), max(y), length.out = grid.lines)
 xy <- expand.grid( altura = x.pred, edad = y.pred)
 z.pred <- matrix(predict(tree, newdata = xy), 
                  nrow = grid.lines, ncol = grid.lines)
-# fit data points to drop lines perpendicular to the grid surface
-#fitpoints <- predict(tree)
 
+#fitpoints <- predict(tree)
+#alternativa 1: plot3D
 scatter3D(x,y,z,pch = 18, cex = 1, alpha = 0.7, 
           theta = 220, phi = 20, ticktype = "simple",
           xlab = "altura", ylab = "edad", zlab = "peso",  
@@ -37,6 +37,7 @@ scatter3D(x,y,z,pch = 18, cex = 1, alpha = 0.7,
                       facets = NA), main = "Datos observados vs. superficie de predicción")
 
 #Basado en el código de: https://plotly.com/r/ml-regression/
+#alternativa 2: plotly
 plot_ly(dtrain, x = ~x, y = ~y, z = ~z) %>%
   add_markers(size = 1,color = I("lightblue")) %>% 
   add_surface(x=x.pred, y=y.pred, z=z.pred,type = 'mesh3d', name = 'pred_surface',
