@@ -7,13 +7,9 @@ ui <- fluidPage(
   plotlyOutput("graph")
 )
 
+
 server <- function(input, output, session) {
-  #N <- 100
-  # x <- rnorm(N, mean = 50, sd = 2.3)
-  # y <- runif(N, min = 0, max = 100)
-  # z <- runif(N, min = 4, max = 70)
-  # luci.frame <- data.frame(x, y, z)
-  #Vamos a crear un dataset sintético y graficarlo en 3D
+  
   set.seed(911)
   
   n = 100
@@ -21,7 +17,7 @@ server <- function(input, output, session) {
   dtrain <- data.frame(x = runif(n,4.5,13.5),y = runif(n,4.5,13.5))
   noise <- rnorm(n, mean=0, sd=0.5)
   dtrain <- dtrain %>% mutate(z = sqrt((x-9)**2+(y-9)**2)+noise)
-  # luci.frame <- copy(dtrain)
+  
   
   output$graph <- renderPlotly({
     plot_ly(
