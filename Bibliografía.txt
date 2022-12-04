@@ -1,0 +1,10 @@
+Breiman, L. et al (1984) Classification and Regression Trees. Chapman and Hall/CRC.
+Therneau, T. M., Atkinson, E. J., & Foundation, M. (2015). An Introduction to Recursive Partitioning Using the RPART Routines. 
+
+Scikit-learn: Machine Learning in Python, Pedregosa et al., JMLR 12, pp. 2825-2830, 2011.
+
+Hastie, T. et al (2001) The Elements of Statistical Learning. 
+
+Loh, Wei-Yin. “Fifty Years of Classification and Regression Trees.” International Statistical Review, vol. 82, no. 3, 30 June 2014, pp. 329–348, 10.1111/insr.12016.
+
+Kaggle (2021) State of Machine Learning and Data Science
