@@ -14,6 +14,8 @@ fitted.values <- predict(tree, newdata = dtrain)
 
 fancyRpartPlot(tree)
 
+#basado en el código de: https://rpubs.com/pjozefek/576206
+
 x <- dtrain$altura
 y <- dtrain$edad
 z <- dtrain$peso
@@ -34,6 +36,7 @@ scatter3D(x,y,z,pch = 18, cex = 1, alpha = 0.7,
           surf = list(x = x.pred, y = y.pred, z = z.pred, col = "black", colvar= NULL, alpha = 1,
                       facets = NA), main = "Datos observados vs. superficie de predicción")
 
+#Basado en el código de: https://plotly.com/r/ml-regression/
 plot_ly(dtrain, x = ~x, y = ~y, z = ~z) %>%
   add_markers(size = 1,color = I("lightblue")) %>% 
   add_surface(x=x.pred, y=y.pred, z=z.pred,type = 'mesh3d', name = 'pred_surface',

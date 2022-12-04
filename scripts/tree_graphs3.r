@@ -29,6 +29,7 @@ fitted.values <- predict(tree, newdata = dtrain)
 
 #fancyRpartPlot(tree, digits = 3)
 
+#Basado en el código de:https://rpubs.com/pjozefek/576206 y https://plotly.com/r/ml-regression/
 grid.lines = 50   #number of lines on grid
 #predict x, y and z variables’ values
 x.pred <- seq(4.5, 13.5, length.out = grid.lines)
